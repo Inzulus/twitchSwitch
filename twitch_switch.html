@@ -75,7 +75,7 @@
             var currentStream = 0;
             var globalChannelName = new Array;
             var topChannels = false;
-            
+
 
             var oauthHash = location.hash.substr(1);
             var accessToken = oauthHash.substr(oauthHash.indexOf('access_token=')).split('&')[0].split('=')[1];
@@ -88,18 +88,18 @@
 
 
             window.onload = function () {
-            
+
                 initPage(topChannels);
 
             };
-            
-            function changeChannels(pTopChannels){
+
+            function changeChannels(pTopChannels) {
                 topChannels = pTopChannels;
-                location.reload(); 
+                location.reload();
             }
 
-           
-            
+
+
             function initPage(pTopChannels) {
 
                 console.log("initStart");
@@ -117,12 +117,12 @@
 
             function getTwitchData(pTopChannels) {
                 var apiLink = "";
-                if(!pTopChannels){
-                   apiLink = 'https://api.twitch.tv/kraken/streams/followed?oauth_token=hwp6g043mtx2w9lcc1sxsu6xflypj5&client_id=' + accessToken;
-                }
+                if (pTopChannels)
+                    apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
+
                 else
-                   apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
-                
+                    apiLink = 'https://api.twitch.tv/kraken/streams/followed?oauth_token=hwp6g043mtx2w9lcc1sxsu6xflypj5&client_id=' + accessToken;
+
                 $.getJSON(apiLink, function (data) {
                     console.log(data);
                     var streamArray = data.streams;
@@ -144,7 +144,7 @@
 
                 setTimeout(spawnPlayers, 1000);
 
-            
+
             }
 
 
