@@ -1,0 +1,298 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head> 
+        <title>Twitch Switch</title>
+        <meta name="author" content="Julius Müller">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="twitch_switch_style.css">
+    </head>
+    <body>
+        <span style="font-size:20px;cursor:pointer;" onclick="openNav()">&#9776;</span>
+        <h2>Twitch Switch</h2>
+
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="javascript:changeChannel(true);">Top Channels</a>
+            <a href="javascript:changeChannel(false);">Followed Channels</a>
+        </div>
+
+        <!-- Use any element to open the sidenav -->
+
+
+        <script>
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+            }
+        </script>
+
+        <div id="playerArea">
+        </div>
+
+        <p>&copy; Julius Müller 2018</p>
+
+        <script>
+
+            var twitchDiv = [];
+
+
+            function createDivs() {
+                for (var k = 0; k < (25); k++) {
+
+                    var divName = 'twitch-embed' + k;
+                    console.log(divName);
+                    var div = document.createElement('div');
+                    div.setAttribute('id', divName);
+                    //spawn = document.getElementById("streamdiv");
+                    //document.body.insertBefore(div, spawn);
+                    document.getElementById('playerArea').appendChild(div);
+                    twitchDiv.push(divName);
+
+                    //var channelNumber = document.createTextNode(k+1);
+                    //div.appendChild(channelNumber);
+
+
+                }
+            }
+
+        </script>
+
+        <!-- Works only with a single ' -->		
+
+        <!-- Load the Twitch embed script -->
+        <!-- <script src= "http://player.twitch.tv/js/embed/v1.js"></script> -->
+        <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+        <script src="https://code.jquery.com/jquery-latest.js"></script>
+        <script>
+
+            var MAXINDEX = 24;
+
+            var player = [];
+            var currentStream = 0;
+            var globalChannelName = new Array;
+            var topChannels = false;
+            
+
+            var oauthHash = location.hash.substr(1);
+            var accessToken = oauthHash.substr(oauthHash.indexOf('access_token=')).split('&')[0].split('=')[1];
+
+
+
+
+            document.addEventListener('DOMContentLoaded', createDivs);
+
+
+
+            window.onload = function () {
+            
+                initPage(topChannels);
+
+            };
+            
+            function changeChannels(pTopChannels){
+                topChannels = pTopChannels;
+                location.reload(); 
+            }
+
+           
+            
+            function initPage(pTopChannels) {
+
+                console.log("initStart");
+
+                //setTimeout(spawnPlayers,5000);
+                //spawnPlayers moved to getTwitchData because they executed synchronous					
+                document.addEventListener("keydown", keyDown, false);
+                getTwitchData(pTopChannels);
+                console.log(accessToken);
+            }
+
+
+
+
+
+            function getTwitchData(pTopChannels) {
+                var apiLink = "";
+                if(!pTopChannels){
+                   apiLink = 'https://api.twitch.tv/kraken/streams/followed?oauth_token=hwp6g043mtx2w9lcc1sxsu6xflypj5&client_id=' + accessToken;
+                }
+                else
+                   apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
+                
+                $.getJSON(apiLink, function (data) {
+                    console.log(data);
+                    var streamArray = data.streams;
+                    console.log(streamArray);
+                    var channelName = [];
+
+                    for (var i = 0; i < (streamArray.length); i++) {
+
+                        console.log(streamArray[i]);
+                        channelName.push(streamArray[i].channel.name);
+                        console.log(channelName[i]);
+
+                    }
+                    console.log(channelName);
+                    globalChannelName = channelName;
+                    console.log(globalChannelName);
+
+                });
+
+                setTimeout(spawnPlayers, 1000);
+
+            
+            }
+
+
+
+            function spawnPlayers() {
+                for (var j = 0; j < (globalChannelName.length); j++) {
+
+                    var divName = 'twitch-embed' + j;
+                    var options = {
+                        width: '100%',
+                        height: '100%',
+                        channel: globalChannelName[j],
+                        muted: true,
+                        autoplay: false
+                    };
+
+                    var twitchPlayer = new Twitch.Player(divName, options);
+                    player.push(twitchPlayer);
+                    //embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
+                    //var tempPlayer = embed;
+
+
+                    hideElement(twitchDiv[j], player[j]);
+                    //hideDiv(twitchDiv[j],player[j]);
+                }
+                console.log(twitchDiv);
+                console.log(player);
+
+                showElement(twitchDiv[0], player[0]);
+
+                //player[0].addEventListener(Twitch.Embed.VIDEO_READY, () => {
+                //	var player = player[0];
+                //	player.play();
+                //});
+
+                //for(var i = 0; i<player.length();i++){
+                //	player[i].setMuted(true);
+                //	player[i].pause();
+                //}
+
+                player[0].play();
+                player[24].play();
+                player[1].play();
+
+            }
+
+            function startPlayer() {
+                player[0].play();
+                player[1].play();
+                player[24].play();
+
+            }
+
+
+
+            function hideElement(twitch_emb, player) {
+                console.log(document.getElementById(twitch_emb));
+                document.getElementById(twitch_emb).setAttribute("style", "display:none;");
+                //document.getElementById(twitch_emb).style.display = 'none';
+                //var tempPlayer = player;
+                player.setMuted(true);
+            }
+
+            function hideDiv(twitchdiv) {
+                document.getElementById(twitchdiv).setAttribute("style", "display:none;");
+            }
+
+            function showElement(twitch_emb, player) {
+                document.getElementById(twitch_emb).setAttribute("style", "display:show;");
+                //var tempPlayer = player;
+                player.setMuted(false);
+            }
+
+            function showDiv(twitchdiv) {
+                document.getElementById(twitchdiv).setAttribute("style", "display:show;");
+            }
+
+            function changeChannelNum(twitch_emb, channelNum) {
+                var twitchElement = document.getElementById(twitch_emb);
+                var text = document.createTextNode(channelNum);
+
+                //$(twitch_emb).contents().filter(function(){return this.nodeType === 3;})​.remove();​				
+
+                twitchElement.appendChild(text);
+
+            }
+
+            //converts postions > MAXINDEX to correct positions
+            function getListPosition(inputPosition) {
+                if (inputPosition > MAXINDEX) {
+                    return inputPosition - MAXINDEX - 1;
+                }
+                if (inputPosition < 0) {
+                    return (MAXINDEX + 1) + inputPosition;
+                }
+                return inputPosition;
+            }
+
+            function setSpecificStream(streamNum) {
+                hideElement(twitchDiv[currentStream], player[currentStream]);
+                player[getListPosition(currentStream)].pause();
+                player[getListPosition(currentStream - 1)].pause();
+                player[getListPosition(currentStream + 1)].pause();
+
+                showElement(twitchDiv[streamNum], player[streamNum]);
+                player[getListPosition(streamNum)].play();
+                player[getListPosition(streamNum - 1)].play();
+                player[getListPosition(streamNum + 1)].play();
+                currentStream = streamNum;
+
+            }
+
+            function nextStream() {
+                hideElement(twitchDiv[currentStream], player[currentStream]);
+                showElement(twitchDiv[getListPosition(currentStream + 1)], player[getListPosition(currentStream + 1)]);
+                player[getListPosition(currentStream - 1)].pause();
+                player[getListPosition(currentStream + 2)].play();
+                currentStream = getListPosition(currentStream + 1);
+
+            }
+
+            function previousStream() {
+                hideElement(twitchDiv[currentStream], player[currentStream]);
+                showElement(twitchDiv[getListPosition(currentStream - 1)], player[getListPosition(currentStream - 1)]);
+                player[getListPosition(currentStream + 1)].pause();
+                player[getListPosition(currentStream - 2)].play();
+                currentStream = getListPosition(currentStream - 1);
+            }
+
+
+            function keyDown(event) {
+                if (event.keyCode == 39) {
+                    nextStream();
+                }
+                if (event.keyCode == 37) {
+                    previousStream();
+                }
+                if (event.keyCode >= 49 && event.keyCode <= 57) {
+                    setSpecificStream(event.keyCode - 49);
+                }
+            }
+
+
+
+
+        </script>	
+    </body>
+</html>
+
+
+
