@@ -117,7 +117,7 @@
 
             function getTwitchData(pTopChannels) {
                 var apiLink = "";
-                if (pTopChannels)
+                if (!pTopChannels)
                     apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
 
                 else
