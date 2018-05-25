@@ -118,10 +118,10 @@
             function getTwitchData(pTopChannels) {
                 var apiLink = "";
                 //if (!pTopChannels)
-                  //  apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
+                    apiLink = 'https://api.twitch.tv/kraken/streams?streams=live&language=en&client_id=8chntrfm3gtul27itqwuqklni1osyz';
 
                 
-                    apiLink = 'https://api.twitch.tv/kraken/streams/followed?oauth_token=hwp6g043mtx2w9lcc1sxsu6xflypj5&client_id=' + accessToken;
+                  //  apiLink = 'https://api.twitch.tv/kraken/streams/followed?oauth_token=hwp6g043mtx2w9lcc1sxsu6xflypj5&client_id=' + accessToken;
 
                 $.getJSON(apiLink, function (data) {
                     console.log(data);
